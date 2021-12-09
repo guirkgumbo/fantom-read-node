@@ -132,13 +132,15 @@ make
 ### Download the genesis file
 This will take a couple mins
 
+```
 cd build/
 wget https://opera.fantom.network/mainnet.g
+```
 
 ### Setup a systemd service file
 
 ```
-sudo nano /etc/systemd/system/geth.service
+sudo vi /etc/systemd/system/opera.service
 ```
 
 Copy the following
