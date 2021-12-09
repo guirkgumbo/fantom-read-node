@@ -95,4 +95,81 @@ sudo reboot
 TODO: Still unsure of all the ports I want open till I setup the node API
 
 
+## Install Read-only node
 
+### Create a user account
+
+```
+sudo adduser --home /home/opera --disabled-password --gecos 'Fantom Opera Client' opera
+
+```
+
+### Install golang
+
+```
+wget https://dl.google.com/go/go1.15.10.linux-amd64.tar.gz
+sudo tar -xvf go1.15.10.linux-amd64.tar.gz -C /usr/local/
+```
+
+### Setup goland environment variables in the .bashrc
+
+```
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+```
+Dont forget to .source the .bashrc after use
+
+### Checkout and build go-opera
+
+```
+git clone https://github.com/Fantom-foundation/go-opera.git
+cd go-opera/
+git checkout release/1.0.2-rc.5
+make
+```
+
+### Download the genesis file
+This will take a couple mins
+
+cd build/
+wget https://opera.fantom.network/mainnet.g
+
+### Setup a systemd service file
+
+```
+sudo nano /etc/systemd/system/geth.service
+```
+
+Copy the following
+
+```
+[Unit]
+Description=Fantom Go-Opera Client
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=opera
+WorkingDirectory=/home/opera/go-opera/build
+ExecStart=/home/opera/go-opera/build/opera --genesis mainnet.g
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Start Go-Opera
+
+```
+sudo systemctl daemon-reload
+sudo systemctl start opera
+sudo systemctl enable opera
+```
+
+### View logs to confirm it is working correctly
+
+```
+sudo journalctl -u opera -f
+```
